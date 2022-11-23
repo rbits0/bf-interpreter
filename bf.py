@@ -104,7 +104,7 @@ def runBf(text, debugMode=None, breakpointsEnabled=True, numColumns = 1):
                 validChar = False
             
             if debugMode is not None and validChar:
-                print(f'char {textPointer}: {text[textPointer]} : {" ".join([str(x) for x in memory])}')
+                print(f'char {textPointer}: {text[textPointer]} : {" ".join([str(x) for x in memory[:numColumns]])}')
                 print(' ' * len(f'Char {textPointer}: {text[textPointer]} : ') + ''.join([' ' * (len(str(x)) + 1) for x in memory[:memoryPointer]])+ '^') # Correct padding for pointer
 
             if debugMode == 'debug' or pause:
