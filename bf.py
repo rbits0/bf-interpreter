@@ -1,14 +1,16 @@
 import os, sys, argparse
 
 
-def runBf(text, debugMode=None, breakpointsEnabled=True):
-    memory = [0]
+def runBf(text, debugMode=None, breakpointsEnabled=True, numColumns = 1):
+    memory = [0] * numColumns
     memoryPointer = 0
     textPointer = 0
     userInput = ''
-
+    
     try:
         while True:
+            validChar = True
+
             if textPointer >= len(text):
                 break
             elif text[textPointer] == '<':
@@ -22,7 +24,10 @@ def runBf(text, debugMode=None, breakpointsEnabled=True):
             elif text[textPointer] == '-':
                 memory[memoryPointer] -= 1
             elif text[textPointer] == '.':
-                print(chr(memory[memoryPointer]))
+                if debugMode is not None:
+                    print('Output:', chr(memory[memoryPointer]), ':', memory[memoryPointer])
+                else:
+                    print(chr(memory[memoryPointer]), end='')
             elif text[textPointer] == ',':
                 if len(userInput) == 0:
                     userInput = input()
@@ -47,6 +52,8 @@ def runBf(text, debugMode=None, breakpointsEnabled=True):
 
                     if bracketIndex < 0:
                         raise IndexError(f'Matching bracket not found at character {textPointer}')
+                    else:
+                        textPointer = bracketIndex
             elif text[textPointer] == ']':
                 if memory[memoryPointer] != 0:
                     # Find matching bracket
@@ -61,10 +68,23 @@ def runBf(text, debugMode=None, breakpointsEnabled=True):
                             else:
                                 bracketIndex = i
                     
-                if bracketIndex < 0:
-                    raise IndexError(f'Matching bracket not found at character {textPointer}')
+                    if bracketIndex < 0:
+                        raise IndexError(f'Matching bracket not found at character {textPointer}')
+                    else:
+                        textPointer = bracketIndex
+            else:
+                validChar = False
             
+            if debugMode is not None and validChar:
+                print(text[textPointer], ':', ' '.join([str(x) for x in memory]))
+                print('    ' + ''.join([' ' * (len(str(x)) + 1) for x in memory[:memoryPointer]])+ '^') # Correct padding for pointer
+
+            if debugMode == 'debug': 
+                input()
+
             textPointer += 1
+            
+
                         
     # except IndexError as excpt:
     #     print(f'Error: {excpt}')
@@ -80,6 +100,7 @@ def main():
     debugModes.add_argument('-d', '--debug', required=False, action='store_true', help='step through the code and display the memory')
     debugModes.add_argument('-s', '--display', required=False, action='store_true', help='display the memory while running the code')
     parser.add_argument('-b', '--nobreak', required=False, action='store_true', help='disable breakpoints')
+    parser.add_argument('-n', required=False, help='number of columns if debug or display is enabled')
     parser.add_argument("file")
     args = parser.parse_args()
 
@@ -90,7 +111,8 @@ def main():
             text = file.read()
         
         debugMode = 'debug' if args.debug else 'display' if args.display else None
-        runBf(text, debugMode, not args.nobreak)
+        numColumns = args.n if args.n else 50 if debugMode else 1
+        runBf(text, debugMode, not args.nobreak, numColumns)
     except FileNotFoundError:
         print(f'File "{file_path}" not found')
 
