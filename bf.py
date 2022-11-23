@@ -1,7 +1,7 @@
 import os, sys, argparse
 
 
-def runBf(text, debugMode=None, breakpointsEnabled=True, numColumns = 1):
+def runBf(text, debugMode=None, breakpointsEnabled=True, functionsEnabled=True, numColumns = 1):
     memory = [0] * numColumns
     memoryPointer = 0
     textPointer = 0
@@ -130,6 +130,7 @@ def main():
     debugModes.add_argument('-d', '--debug', required=False, action='store_true', help='step through the code and display the memory')
     debugModes.add_argument('-s', '--display', required=False, action='store_true', help='display the memory while running the code')
     parser.add_argument('-b', '--nobreak', required=False, action='store_true', help='disable breakpoints')
+    parser.add_argument('-f', '--nofunc', required=False, action='store_true', help='disable functions')
     parser.add_argument('-n', required=False, help='number of columns if debug or display is enabled')
     parser.add_argument("file")
     args = parser.parse_args()
@@ -142,7 +143,7 @@ def main():
         
         debugMode = 'debug' if args.debug else 'display' if args.display else None
         numColumns = args.n if args.n else 50 if debugMode else 1
-        runBf(text, debugMode, not args.nobreak, numColumns)
+        runBf(text, debugMode, not args.nobreak, not args.nofunc, numColumns)
     except FileNotFoundError:
         print(f'File "{file_path}" not found')
 

@@ -2,7 +2,7 @@
 A brainfuck interpreter in Python, with debugging and functions
 
 ## Usage
-python ./bf.py [-d] [-s] [-n N] [-b] file.bf
+python ./bf.py [-d] [-s] [-n N] [-b] [-f] file.bf
 
 -s displays the memory while running the code
 
@@ -11,6 +11,8 @@ python ./bf.py [-d] [-s] [-n N] [-b] file.bf
 -n is the number of memory locations to display when using -d or -s
 
 -b disables breakpoints
+
+-f disables functions
 
 ## Breakpoints and functions
 "*" will create a breakpoint
