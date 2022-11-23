@@ -10,6 +10,7 @@ def runBf(text, debugMode=None, breakpointsEnabled=True, numColumns = 1):
     try:
         while True:
             validChar = True
+            pause = False
 
             if textPointer >= len(text):
                 break
@@ -72,6 +73,15 @@ def runBf(text, debugMode=None, breakpointsEnabled=True, numColumns = 1):
                         raise IndexError(f'Matching bracket not found at character {textPointer}')
                     else:
                         textPointer = bracketIndex
+            elif text[textPointer] == '*':
+                if text[textPointer + 1:textPointer + 4] == 'def':
+                    # TODO: Implement functions
+                    pass
+                elif breakpointsEnabled:
+                    if debugMode is None:
+                        break
+                    else:
+                        pause = True
             else:
                 validChar = False
             
@@ -79,7 +89,7 @@ def runBf(text, debugMode=None, breakpointsEnabled=True, numColumns = 1):
                 print(text[textPointer], ':', ' '.join([str(x) for x in memory]))
                 print('    ' + ''.join([' ' * (len(str(x)) + 1) for x in memory[:memoryPointer]])+ '^') # Correct padding for pointer
 
-            if debugMode == 'debug': 
+            if debugMode == 'debug' or pause: 
                 input()
 
             textPointer += 1
