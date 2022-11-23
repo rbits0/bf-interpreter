@@ -6,6 +6,7 @@ def runBf(text, debugMode=None, breakpointsEnabled=True, numColumns = 1):
     memoryPointer = 0
     textPointer = 0
     userInput = ''
+    returnIndex = []
     
     try:
         while True:
@@ -73,10 +74,27 @@ def runBf(text, debugMode=None, breakpointsEnabled=True, numColumns = 1):
                         raise IndexError(f'Matching bracket not found at character {textPointer}')
                     else:
                         textPointer = bracketIndex
-            elif text[textPointer] == '*':
-                if text[textPointer + 1:textPointer + 4] == 'def':
-                    # TODO: Implement functions
-                    pass
+            elif text[textPointer] == '@':
+                if text[textPointer + 1:textPointer + 5] == 'func':
+                    functionName = text[textPointer + 6:].split()[0]
+                    returnIndex.append(textPointer + 6 + len(functionName))
+                    if debugMode is not None:
+                        print(f'Jumping to {functionName}')
+
+                    funcLocation = text.find('@def ' + functionName + ':')
+                    if funcLocation == -1:
+                        raise KeyError(f'No function named {functionName} found')
+                    textPointer = funcLocation + len(functionName) + 6
+                    if textPointer >= len(text):
+                        break
+                elif text[textPointer + 1:textPointer + 7] == 'return':
+                    if len(returnIndex) == 0:
+                        raise IndexError('Return used outside of a function')
+                    if debugMode is not None:
+                        print(f'Returning to char {returnIndex[-1]}')
+                    textPointer = returnIndex.pop()
+                elif text[textPointer + 1:textPointer + 4] == 'def':
+                    break
                 elif breakpointsEnabled:
                     if debugMode is None:
                         break
@@ -89,16 +107,18 @@ def runBf(text, debugMode=None, breakpointsEnabled=True, numColumns = 1):
                 print(f'char {textPointer}: {text[textPointer]} : {" ".join([str(x) for x in memory])}')
                 print(' ' * len(f'Char {textPointer}: {text[textPointer]} : ') + ''.join([' ' * (len(str(x)) + 1) for x in memory[:memoryPointer]])+ '^') # Correct padding for pointer
 
-            if debugMode == 'debug' or pause: 
+            if debugMode == 'debug' or pause:
                 input()
 
             textPointer += 1
             
 
                         
-    # except IndexError as excpt:
-    #     print(f'Error: {excpt}')
+    except IndexError as excpt:
+        print(f'Error: {excpt}')
     except ValueError as excpt:
+        print(f'Error: {excpt}')
+    except KeyError as excpt:
         print(f'Error: {excpt}')
 
         
